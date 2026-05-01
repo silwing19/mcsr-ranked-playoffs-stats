@@ -11,9 +11,8 @@ SPLITS = ['overworld', 'terrain to bastion', 'bastion split', 'fort to blind', '
 def load_data():
     placements = pd.read_csv("placements.csv")
     df = pd.read_csv("all_splits.csv")
-    cols = df.columns[4:18]
-    df[cols] = df[cols].apply(
-        lambda col: pd.to_timedelta(col, errors="coerce").dt.total_seconds()
+    df.iloc[:, 4:18] = df.iloc[:, 4:18].apply(
+        lambda col: pd.to_timedelta(col).dt.total_seconds()
     )
     df = df.sort_values('season')
     df['season'] = df['season'].astype('category')
@@ -21,11 +20,11 @@ def load_data():
 
 # returns a data frame with player, average placement, number of seasons, and percentile for average placement. 
 # has an option to return it with the placements rescaled and/or adjusted for number of seasons
-def playoffsplacements(df, rescale = False, adjust = False):
+def playoffsplacements(df, rescale = False, adjust = False, k = None):
     if rescale: df = adjustments.rescale_placements(df)
     df =  df.groupby('player').agg({'season':'count', 'placement':'mean', 'seed':'mean'}).rename(columns={'season': 'playoffs_played', 'placement': 'average_placement', 'seed': 'average_seed'})
-    if adjust: df = adjustments.adjust(df, 'average_placement', 'playoffs_played', 3)
-    if adjust: df = adjustments.adjust(df, 'average_seed', 'playoffs_played', 3)
+    if adjust: df = adjustments.adjust(df, 'average_placement', 'playoffs_played')
+    if adjust: df = adjustments.adjust(df, 'average_seed', 'playoffs_played')
     df["average_placement_percentile"] = df["average_placement"].rank(pct=True)
     df["average_seed_percentile"] = df["average_seed"].rank(pct=True)
     return df.reset_index()
@@ -44,7 +43,7 @@ def winrate(df, adjust = False, by = 'seed', byseason = False):
     df = df[df['played'] > 0]
     df['lost'] = df['played'] - df['won']
     df['winrate'] = df['won'] / df['played']
-    if adjust: df = adjustments.adjust(df, 'winrate', 'played', k = 5)
+    if adjust: df = adjustments.adjust(df, 'winrate', 'played')
     df["played_percentile"] = df["played"].rank(pct=True)
     df["won_percentile"] = df["won"].rank(pct=True)
     df["winrate_percentile"] = df["winrate"].rank(pct=True)
@@ -99,7 +98,7 @@ def average_time(df, players=None, seasons=None, adjust = False, adjust_for_seas
     else: 
         result = df.groupby('player').agg({'match':'count', 'time':'mean'}).rename(columns={'match': 'number_of_instances', 'time': 'average_time'})
         result = result.reindex(players)
-    if adjust: result = adjustments.adjust(result, 'average_time', 'number_of_instances', 15)
+    if adjust: result = adjustments.adjust(result, 'average_time', 'number_of_instances')
     if 'player' in result.reset_index().columns:
         result = pd.merge(result, players2, how='outer', on='player')
         result["average_time_percentile"] = result["average_time"].rank(pct=True, na_option='bottom')
