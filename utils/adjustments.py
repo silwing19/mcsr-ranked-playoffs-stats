@@ -8,7 +8,7 @@ def rescale_placements(data):
     return df
 
 def adjust(df, to_adjust, by, k = None):
-    global_avg = df[to_adjust].mean()
+    global_avg = df[to_adjust].mean() * 1.5
     if k: k = k 
     else: k = df[to_adjust].mean()
     df[to_adjust] = (df[to_adjust] * df[by] + global_avg * k) / (df[by] + k)
