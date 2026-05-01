@@ -10,6 +10,6 @@ def rescale_placements(data):
 def adjust(df, to_adjust, by, k = None):
     global_avg = df[to_adjust].mean()
     if k: k = k 
-    else: k = df[to_adjust].median()
+    else: k = df[to_adjust].mean()
     df[to_adjust] = (df[to_adjust] * df[by] + global_avg * k) / (df[by] + k)
     return df.reset_index()
