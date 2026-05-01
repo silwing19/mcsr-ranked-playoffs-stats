@@ -575,6 +575,7 @@ with st.container(
         st.markdown(f"""###### {"average" if view == 'average times' else ""} {seed_types_by3} {"" if view == 'average times' else "counts"} per seed type by player""")
         if view == 'average times':
             st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='average').reset_index())
+            cols = st_players.columns[1:]
             st_players[cols] = st_players[cols].apply(
                 lambda col: col.map(
                     lambda x: (
