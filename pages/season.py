@@ -227,34 +227,36 @@ else:
     
             seed_types_by = st.pills('show', list(splits), default = "finish")
             
-            box, t = st.columns([0.6, 0.4])
-            
-            with box:
-                box_df = df[['player', 'season', 'match', 'seed_type', seed_types_by]].sort_values('seed_type')
-                box_df = box_df[box_df['season'] == season]
-                seed_type_box = px.box(box_df, y = seed_types_by, x = 'seed_type', color = 'seed_type', points='all', hover_data=['player', seed_types_by, 'season', 'match'])
-                seed_type_box.update_xaxes(showgrid=True)
-                seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
-                seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
-                seed_type_box.update_layout(showlegend=False)
-                st.plotly_chart(seed_type_box)
-
-            with t:
-
-                for seedtype in seeds_df['seed_type'].unique():
-                    average_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].mean()
-                    fastest_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].min()
-                    slowest_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].max()
-                    if not math.isnan(fastest_time_st):
-                        if fastest_time_st < 0:
-                            fastest_time_st = "-" + str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
-                        else: fastest_time_st = str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
-                    else: fastest_time_st = "N/A"
-                    
-                    if not math.isnan(slowest_time_st): slowest_time_st = str(datetime.timedelta(seconds = abs(slowest_time_st)))[2:]
-                    else: slowest_time_st = "N/A"
-                    
-                    if not math.isnan(average_time_st): average_time_st = str(datetime.timedelta(seconds = np.round(average_time_st)))[2:]
-                    else: average_time_st = "N/A"
-
-                    st.markdown(f'<span style="color:#00c15a;font-weight:bold">{seedtype}</span> \n - average <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{average_time_st}</span>\n - fastest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{fastest_time_st}</span> \n - slowest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{slowest_time_st}</span>', unsafe_allow_html=True)
+            if not seed_types_by: st.warning("choose a season")
+            else:
+                box, t = st.columns([0.6, 0.4])
+                
+                with box:
+                    box_df = df[['player', 'season', 'match', 'seed_type', seed_types_by]].sort_values('seed_type')
+                    box_df = box_df[box_df['season'] == season]
+                    seed_type_box = px.box(box_df, y = seed_types_by, x = 'seed_type', color = 'seed_type', points='all', hover_data=['player', seed_types_by, 'season', 'match'])
+                    seed_type_box.update_xaxes(showgrid=True)
+                    seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
+                    seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
+                    seed_type_box.update_layout(showlegend=False)
+                    st.plotly_chart(seed_type_box)
+    
+                with t:
+    
+                    for seedtype in seeds_df['seed_type'].unique():
+                        average_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].mean()
+                        fastest_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].min()
+                        slowest_time_st = seeds_df[seeds_df['seed_type'] == seedtype][seed_types_by].max()
+                        if not math.isnan(fastest_time_st):
+                            if fastest_time_st < 0:
+                                fastest_time_st = "-" + str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
+                            else: fastest_time_st = str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
+                        else: fastest_time_st = "N/A"
+                        
+                        if not math.isnan(slowest_time_st): slowest_time_st = str(datetime.timedelta(seconds = abs(slowest_time_st)))[2:]
+                        else: slowest_time_st = "N/A"
+                        
+                        if not math.isnan(average_time_st): average_time_st = str(datetime.timedelta(seconds = np.round(average_time_st)))[2:]
+                        else: average_time_st = "N/A"
+    
+                        st.markdown(f'<span style="color:#00c15a;font-weight:bold">{seedtype}</span> \n - average <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{average_time_st}</span>\n - fastest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{fastest_time_st}</span> \n - slowest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{slowest_time_st}</span>', unsafe_allow_html=True)
