@@ -11,8 +11,9 @@ SPLITS = ['overworld', 'terrain to bastion', 'bastion split', 'fort to blind', '
 def load_data():
     placements = pd.read_csv("placements.csv")
     df = pd.read_csv("all_splits.csv")
-    df.iloc[:, 4:18] = df.iloc[:, 4:18].apply(
-        lambda col: pd.to_timedelta(col).dt.total_seconds()
+    cols = df.columns[4:18]
+    df[cols] = df[cols].apply(
+        lambda col: pd.to_timedelta(col, errors="coerce").dt.total_seconds()
     )
     df = df.sort_values('season')
     df['season'] = df['season'].astype('category')
