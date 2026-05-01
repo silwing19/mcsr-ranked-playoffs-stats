@@ -580,7 +580,7 @@ with st.container(
                 lambda col: col.map(
                     lambda x: (
                         (("-" if x < 0 else "") +
-                         str(pd.to_timedelta(abs(x), unit="s")))
+                         str(pd.to_timedelta(abs(round(x)), unit="s")))
                         if pd.notnull(x) else ""
                     )
                 )
