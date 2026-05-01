@@ -42,7 +42,7 @@ def winrate(df, adjust = False, by = 'seed', byseason = False):
     df = df[df['played'] > 0]
     df['lost'] = df['played'] - df['won']
     df['winrate'] = df['won'] / df['played']
-    if adjust: df = adjustments.adjust(df, 'winrate', 'played')
+    if adjust: df = adjustments.adjust(df, 'winrate', 'played', k = 30 if by == 'seed' else 8)
     df["played_percentile"] = df["played"].rank(pct=True)
     df["won_percentile"] = df["won"].rank(pct=True)
     df["winrate_percentile"] = df["winrate"].rank(pct=True)
