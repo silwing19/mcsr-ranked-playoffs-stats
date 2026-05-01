@@ -21,9 +21,9 @@ default_season = season if season else st.session_state.get("selected_season", m
 season = st.pills("choose a season", seasons, selection_mode='single', default = default_season if season else max(seasons))
 if not season: 
     st.warning("choose a season")
-    st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - " + "season")
+    #st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - " + "season")
 else:
-    st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - season " + str(season))
+    #st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - season " + str(season))
     st.title("season " + str(season))
     seeds, col1, col2 = st.columns([0.25, 0.25, 0.5])
     placements = placements[placements['season'] == season]
