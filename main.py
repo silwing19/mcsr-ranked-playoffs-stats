@@ -6,7 +6,7 @@ import datetime
 from utils import sidebar
 import pandas as pd
 
-st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - home")
+st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats")
 
 df, placements = filters.load_data()
 
