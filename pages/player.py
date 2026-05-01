@@ -179,35 +179,37 @@ with st.container(
 
     # filter by split (default is finish time)
     selected_split = st.pills("split: ", times['split'].unique(), default = "finish", selection_mode = "single")
-    times = times[times['split'] == selected_split]
-
-    # boxplot for times not sorted by season
-    overall_boxplot = px.box(times, y = "time", height = 350, points='all', hover_data=['player', 'time', 'season', 'match'])
-    overall_boxplot.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), marker=dict(color='white', opacity=0.2), pointpos=0, jitter=0.5)
-
-    # boxplot for times by season
-    seasons_boxplot = px.box(times, y = "time", x = 'season', color = 'season', height = 350, points='all', hover_data=['player', 'time', 'season', 'match'])
-    seasons_boxplot.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
-
-    # for the spider plot comparing to all players
-
-    # put all the plots on the page
-    col1, col2 = st.columns([0.2, 0.8])
-    with col1:
-        st.markdown("""###### all times""")
-        st.plotly_chart(overall_boxplot)
-    with col2:
-        st.markdown("""###### times by season""")
-        st.plotly_chart(seasons_boxplot) 
-    with st.container():
-        st.markdown("""###### times""")
-        t = (times[times['time'].isna() == False].sort_values('time', ascending=True)[['season', 'match', 'split', 'time']])
-        t['time'] = [("-" if time < 0 else "") + str(datetime.timedelta(seconds = abs(time)))[2:] for time in t['time']]
-        t = filters.add_round(t)
-        t["seed"] = [s[-1:] for s in t['match']]
-        t = t[['season', 'round', 'seed', 'time']]
-        t.columns = ['season', 'round', 'seed', selected_split]
-        st.dataframe(t, height = 150)
+    if not selected_split: st.warning("choose a split")
+    else:
+        times = times[times['split'] == selected_split]
+    
+        # boxplot for times not sorted by season
+        overall_boxplot = px.box(times, y = "time", height = 350, points='all', hover_data=['player', 'time', 'season', 'match'])
+        overall_boxplot.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), marker=dict(color='white', opacity=0.2), pointpos=0, jitter=0.5)
+    
+        # boxplot for times by season
+        seasons_boxplot = px.box(times, y = "time", x = 'season', color = 'season', height = 350, points='all', hover_data=['player', 'time', 'season', 'match'])
+        seasons_boxplot.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
+    
+        # for the spider plot comparing to all players
+    
+        # put all the plots on the page
+        col1, col2 = st.columns([0.2, 0.8])
+        with col1:
+            st.markdown("""###### all times""")
+            st.plotly_chart(overall_boxplot)
+        with col2:
+            st.markdown("""###### times by season""")
+            st.plotly_chart(seasons_boxplot) 
+        with st.container():
+            st.markdown("""###### times""")
+            t = (times[times['time'].isna() == False].sort_values('time', ascending=True)[['season', 'match', 'split', 'time']])
+            t['time'] = [("-" if time < 0 else "") + str(datetime.timedelta(seconds = abs(time)))[2:] for time in t['time']]
+            t = filters.add_round(t)
+            t["seed"] = [s[-1:] for s in t['match']]
+            t = t[['season', 'round', 'seed', 'time']]
+            t.columns = ['season', 'round', 'seed', selected_split]
+            st.dataframe(t, height = 150)
 
 with st.container(
     border=True,
