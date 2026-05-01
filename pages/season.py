@@ -118,15 +118,17 @@ else:
             compareto = ['all times'] + ["season " + str(i) for i in seasons if i != season]
             compare_to = st.pills("compare to", compareto, selection_mode='single', default='all times')
             
-            if compare_to != 'all times': all_times = all_times[all_times['season'] == int(compare_to[-1])]
-            if compare_to == 'all times': all_times['season'] = 'all'
-            splits_to_plot = pd.concat([season_times, all_times])
-            finishes_to_plot = splits_to_plot[splits_to_plot['split'] == 'finish']
-
-            finishes_box = px.box(finishes_to_plot, orientation='h', y = 'split', x = "time", color = "season", height = 250, points='all', hover_data=['player', 'time'], color_discrete_sequence=['#00c15a', 'gray'])
-            finishes_box.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.3)).update_layout(yaxis_title=None,)
-
-            st.plotly_chart(finishes_box)
+            if not compare_to: st.warning("choose an option")
+            else:
+                if compare_to != 'all times': all_times = all_times[all_times['season'] == int(compare_to[-1])]
+                if compare_to == 'all times': all_times['season'] = 'all'
+                splits_to_plot = pd.concat([season_times, all_times])
+                finishes_to_plot = splits_to_plot[splits_to_plot['split'] == 'finish']
+    
+                finishes_box = px.box(finishes_to_plot, orientation='h', y = 'split', x = "time", color = "season", height = 250, points='all', hover_data=['player', 'time'], color_discrete_sequence=['#00c15a', 'gray'])
+                finishes_box.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.3)).update_layout(yaxis_title=None,)
+    
+                st.plotly_chart(finishes_box)
 
     # times by split -----------------------------------------------------------------------------------------
 
@@ -142,31 +144,35 @@ else:
         season_times = filters.select_splits(df, seasons=[season])
 
         show = st.pills("show", ['average', 'fastest', 'slowest'], selection_mode='single', default='average')
-        if show == 'average': s = 'mean'
-        elif show == 'fastest': s = 'min'
-        elif show == 'slowest': s = 'max'
-
-        times = df[df['season'] == season]
-        cols_to_convert = times.columns.difference(['season', 'player', 'match'])
-        times[cols_to_convert] = times[cols_to_convert].apply(pd.to_numeric, errors='coerce')
-        times2 = times.select_dtypes(include='number').agg(['mean', 'min', 'max'])
-        times2 = times2[['overworld', 'terrain to bastion', 'bastion split', 'fort to blind', 'blind to stronghold','stronghold nav', 'end fight']].T.reset_index()       
-        times_list = '\n'.join(
-                f'- season {show} {split} - <span style="display:inline;color:#00c15a;font-weight:bold">{"-" if time < 0 else ""}{str(datetime.timedelta(seconds = abs(round(time))))[2:]}</span> {f'(<a href="/player?player={times[times[split] == time]['player'].iloc[0]}" class="player-link" target="_self">' + times[times[split] == time]['player'].iloc[0] + '</a>)' if show != 'average' else ""}'
-                for split, time in zip(times2['index'], times2[s])
-            )
-        
-        st.markdown(times_list, unsafe_allow_html=True)
+        if not show: st.warning("choose an option")
+        else:
+            if show == 'average': s = 'mean'
+            elif show == 'fastest': s = 'min'
+            elif show == 'slowest': s = 'max'
+    
+            times = df[df['season'] == season]
+            cols_to_convert = times.columns.difference(['season', 'player', 'match'])
+            times[cols_to_convert] = times[cols_to_convert].apply(pd.to_numeric, errors='coerce')
+            times2 = times.select_dtypes(include='number').agg(['mean', 'min', 'max'])
+            times2 = times2[['overworld', 'terrain to bastion', 'bastion split', 'fort to blind', 'blind to stronghold','stronghold nav', 'end fight']].T.reset_index()       
+            times_list = '\n'.join(
+                    f'- season {show} {split} - <span style="display:inline;color:#00c15a;font-weight:bold">{"-" if time < 0 else ""}{str(datetime.timedelta(seconds = abs(round(time))))[2:]}</span> {f'(<a href="/player?player={times[times[split] == time]['player'].iloc[0]}" class="player-link" target="_self">' + times[times[split] == time]['player'].iloc[0] + '</a>)' if show != 'average' else ""}'
+                    for split, time in zip(times2['index'], times2[s])
+                )
+            
+            st.markdown(times_list, unsafe_allow_html=True)
         
         compareto2 = ['all times'] + ["season " + str(i) for i in seasons if i != season]
         compare_to2 = st.pills("compare to", compareto2, selection_mode='single', default='all times', key=2)
-        if compare_to2 != 'all times': all_times = all_times[all_times['season'] == int(compare_to2[-1])]
-        if compare_to2 == 'all times': all_times['season'] = 'all'
-        splits_to_plot = pd.concat([season_times, all_times])
-        splits_to_plot = splits_to_plot[splits_to_plot['split'] != 'finish']
-        times_box = px.box(splits_to_plot, x = 'split', y = "time", color = "season", height = 500, points='all', hover_data=['player', 'time'], color_discrete_sequence=['#00c15a', 'gray'])
-        times_box.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.3)).update_layout(xaxis_title=None)  
-        st.plotly_chart(times_box)     
+        if not compare_to2: st.warning("choose an option")
+        else:
+            if compare_to2 != 'all times': all_times = all_times[all_times['season'] == int(compare_to2[-1])]
+            if compare_to2 == 'all times': all_times['season'] = 'all'
+            splits_to_plot = pd.concat([season_times, all_times])
+            splits_to_plot = splits_to_plot[splits_to_plot['split'] != 'finish']
+            times_box = px.box(splits_to_plot, x = 'split', y = "time", color = "season", height = 500, points='all', hover_data=['player', 'time'], color_discrete_sequence=['#00c15a', 'gray'])
+            times_box.update_xaxes(showgrid=True).update_traces(fillcolor=None, selector=dict(type='box'), pointpos=0, jitter=0.5, marker=dict(opacity=0.3)).update_layout(xaxis_title=None)  
+            st.plotly_chart(times_box)     
 
     # all matches ---------------------------------------------------------------------------------------------
     col3, col4 = st.columns([0.3, 0.7])
