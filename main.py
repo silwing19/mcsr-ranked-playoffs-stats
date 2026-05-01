@@ -57,7 +57,7 @@ with col2:
         st.markdown("""#### average seed per player""", help="each player's average seed going into all seasons they've played in. seeds are on a 1-16 scale")
         adjust_for_seasons = st.checkbox('adjust for number of seasons played', help="adjusts for the number of seasons played to keep players with very few seasons from having skewed results. makes the rankings in the table more robust, but the actual number loses interpretability", key = 21)
         
-        seasons_placements = filters.playoffsplacements(placements, adjust=True if adjust_for_seasons else False)
+        seasons_placements = filters.playoffsplacements(placements, adjust=adjust_for_seasons)
         avg_seed_player = seasons_placements[seasons_placements['average_seed'] == min(seasons_placements['average_seed'])]['player'].iloc[0]
         avg_seed_avg = round(seasons_placements[seasons_placements['average_seed'] == min(seasons_placements['average_seed'])]['average_seed'].iloc[0], 2)
         
@@ -106,7 +106,7 @@ with place:
         fig.update_traces(fillcolor=None, selector=dict(type='box'),marker=dict(opacity=0.4, color='white'))
         fig.update_traces(pointpos=0, jitter=1)
         st.plotly_chart(fig)
-        st.dataframe(seasons_placements.reset_index()[['player', 'average_placement']].rename(columns={'average_placement': 'average placement'}).sort_values('average placement', ascending=True).reset_index(drop=True), height = 150)
+        st.dataframe(seasons_placements.reset_index(drop=True)[['player', 'average_placement']].rename(columns={'average_placement': 'average placement'}).sort_values('average placement', ascending=True).reset_index(drop=True), height = 150)
 
 with comparison:
     with st.container(
