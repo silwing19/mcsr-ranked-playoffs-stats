@@ -548,50 +548,52 @@ with st.container(
 
     st.markdown("""##### seed types by season""")
     seedtype2 = st.pills("seed type", df['seed_type'].unique(), key = 6, default = "ruined portal")
-    seed_types_by2 = st.pills('show', list(splits), key = 7, default = 'finish')
-    if not seed_types_by2: st.warning("choose an option")
+    if not seedtype2: st.warning("choose an option")
     else:
-        seedtypes_byseason = df[['player', 'season', 'match', 'seed_type', seed_types_by2]].sort_values('seed_type')
-        seedtypes_byseason = seedtypes_byseason[seedtypes_byseason['seed_type'] == seedtype2].sort_values('season')
-        seed_type_box = px.box(seedtypes_byseason, y = seed_types_by2, x = 'season', title = seedtype2 + " " + seed_types_by2 + " times per season", color = 'season', height = 400, points='all', hover_data=['player', seed_types_by2, 'season', 'match'])
-        seed_type_box.update_xaxes(showgrid=True)
-        seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
-        seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
-        seed_type_box.update_layout(showlegend=False)
-        st.plotly_chart(seed_type_box)
-    
-        st.markdown("""##### seed type averages by player""")
-        adjust_st = st.checkbox('adjust for number of instances')
-        seed_types_by3 = st.pills('show', list(splits), key = 8, default = 'finish')
-        st_players_toplot = filters.seedtype_avgs(df, seed_types_by3, adjust = adjust_st)
-    
-        boxplt, table = st.columns(2)
-        with boxplt:
-            st_playeravg_box = px.box(st_players_toplot, y = 'average', x = 'seed_type', color = 'seed_type', height = 400, points='all', hover_data=['player', 'average'])
-            st_playeravg_box.update_xaxes(showgrid=True)
-            st_playeravg_box.update_traces(fillcolor=None, selector=dict(type='box'))
-            st_playeravg_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
-            st_playeravg_box.update_layout(showlegend=False)
-            st.plotly_chart(st_playeravg_box)  
+        seed_types_by2 = st.pills('show', list(splits), key = 7, default = 'finish')
+        if not seed_types_by2: st.warning("choose an option")
+        else:
+            seedtypes_byseason = df[['player', 'season', 'match', 'seed_type', seed_types_by2]].sort_values('seed_type')
+            seedtypes_byseason = seedtypes_byseason[seedtypes_byseason['seed_type'] == seedtype2].sort_values('season')
+            seed_type_box = px.box(seedtypes_byseason, y = seed_types_by2, x = 'season', title = seedtype2 + " " + seed_types_by2 + " times per season", color = 'season', height = 400, points='all', hover_data=['player', seed_types_by2, 'season', 'match'])
+            seed_type_box.update_xaxes(showgrid=True)
+            seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
+            seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
+            seed_type_box.update_layout(showlegend=False)
+            st.plotly_chart(seed_type_box)
         
-        with table:
-            view = st.pills('view', ['average times', 'counts'], default = 'average times')
-            if not view: st.warning("choose an option")
-            else:
-                st.markdown(f"""###### {"average" if view == 'average times' else ""} {seed_types_by3} {"" if view == 'average times' else "counts"} per seed type by player""")
-                if view == 'average times':
-                    st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='average').reset_index())
-                    cols = st_players.columns[1:]
-                    st_players[cols] = st_players[cols].apply(
-                        lambda col: col.map(
-                            lambda x: (
-                                (("-" if x < 0 else "") +
-                                 str(pd.to_timedelta(abs(round(x)), unit="s")))[10:]
-                                if pd.notnull(x) else ""
+            st.markdown("""##### seed type averages by player""")
+            adjust_st = st.checkbox('adjust for number of instances')
+            seed_types_by3 = st.pills('show', list(splits), key = 8, default = 'finish')
+            st_players_toplot = filters.seedtype_avgs(df, seed_types_by3, adjust = adjust_st)
+        
+            boxplt, table = st.columns(2)
+            with boxplt:
+                st_playeravg_box = px.box(st_players_toplot, y = 'average', x = 'seed_type', color = 'seed_type', height = 400, points='all', hover_data=['player', 'average'])
+                st_playeravg_box.update_xaxes(showgrid=True)
+                st_playeravg_box.update_traces(fillcolor=None, selector=dict(type='box'))
+                st_playeravg_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
+                st_playeravg_box.update_layout(showlegend=False)
+                st.plotly_chart(st_playeravg_box)  
+            
+            with table:
+                view = st.pills('view', ['average times', 'counts'], default = 'average times')
+                if not view: st.warning("choose an option")
+                else:
+                    st.markdown(f"""###### {"average" if view == 'average times' else ""} {seed_types_by3} {"" if view == 'average times' else "counts"} per seed type by player""")
+                    if view == 'average times':
+                        st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='average').reset_index())
+                        cols = st_players.columns[1:]
+                        st_players[cols] = st_players[cols].apply(
+                            lambda col: col.map(
+                                lambda x: (
+                                    (("-" if x < 0 else "") +
+                                     str(pd.to_timedelta(abs(round(x)), unit="s")))[10:]
+                                    if pd.notnull(x) else ""
+                                )
                             )
                         )
-                    )
-                else:
-                    st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='match_count').reset_index())
-                st.dataframe(st_players)
+                    else:
+                        st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='match_count').reset_index())
+                    st.dataframe(st_players)
     
