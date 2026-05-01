@@ -220,54 +220,56 @@ with st.container(
 
     # allows you to pick whether to look at win rate by series or by seed (default is by seed)
     wr_by = st.pills("by", ['seed', 'series'], selection_mode ='single', default = 'seed')
+    if not wr_by: st.warning("choose an option")
+    else:
 
-    winrate_df = filters.winrate(df, by = wr_by)
-    winrate_df = winrate_df[winrate_df['player'] == player]
-    winrate_df = winrate_df[['won', 'lost']].T.reset_index()
-    winrate_df.columns = ['result', 'count']
-
-    winrate_df2 = filters.winrate(df, by = wr_by, byseason=True)
-    winrate_df2 = winrate_df2[winrate_df2['player'] == player]
-    winrate_df2 = winrate_df2[['season', 'won', 'lost']]
-    winrate_df2 = winrate_df2.melt('season')
-    winrate_df2.columns = ['season', 'result', 'count']
-
-    # winrate pie chart
-    winrate_pie = px.pie(
-        winrate_df,
-        names='result',
-        values='count',
-        height=300,
-        color='result',
-        color_discrete_map={
-            'won': '#05DF72',
-            'lost': '#FF6467'
-        },
-    )
-    winrate_pie.update_traces(textinfo='percent+label')
-
-    # winrate by seasons bar chart 
-    winrate_bar = px.bar(
-        winrate_df2,
-        x='season',
-        y='count',
-        color='result',
-        height=300,
-        range_y = [0, 5] if wr_by == 'series' else None,
-        color_discrete_map={
-            'won': '#05DF72',
-            'lost': '#FF6467'
-        },
-    )
+        winrate_df = filters.winrate(df, by = wr_by)
+        winrate_df = winrate_df[winrate_df['player'] == player]
+        winrate_df = winrate_df[['won', 'lost']].T.reset_index()
+        winrate_df.columns = ['result', 'count']
     
-    # put the winrate section on the page
-    col5, col6 = st.columns([0.4, 0.6])
-    with col5:
-        st.markdown("""###### overall""")
-        st.plotly_chart(winrate_pie)
-    with col6:
-        st.markdown("""###### by season""")
-        st.plotly_chart(winrate_bar)
+        winrate_df2 = filters.winrate(df, by = wr_by, byseason=True)
+        winrate_df2 = winrate_df2[winrate_df2['player'] == player]
+        winrate_df2 = winrate_df2[['season', 'won', 'lost']]
+        winrate_df2 = winrate_df2.melt('season')
+        winrate_df2.columns = ['season', 'result', 'count']
+    
+        # winrate pie chart
+        winrate_pie = px.pie(
+            winrate_df,
+            names='result',
+            values='count',
+            height=300,
+            color='result',
+            color_discrete_map={
+                'won': '#05DF72',
+                'lost': '#FF6467'
+            },
+        )
+        winrate_pie.update_traces(textinfo='percent+label')
+    
+        # winrate by seasons bar chart 
+        winrate_bar = px.bar(
+            winrate_df2,
+            x='season',
+            y='count',
+            color='result',
+            height=300,
+            range_y = [0, 5] if wr_by == 'series' else None,
+            color_discrete_map={
+                'won': '#05DF72',
+                'lost': '#FF6467'
+            },
+        )
+        
+        # put the winrate section on the page
+        col5, col6 = st.columns([0.4, 0.6])
+        with col5:
+            st.markdown("""###### overall""")
+            st.plotly_chart(winrate_pie)
+        with col6:
+            st.markdown("""###### by season""")
+            st.plotly_chart(winrate_bar)
 
 styled_df = filters.get_series(df, player)[['season', 'round', 'player', 'winner']]
 styled_df['player'] = styled_df['player'].apply(
@@ -337,35 +339,37 @@ with st.container(
         unsafe_allow_html=True)
     st.markdown("""##### times by seed type""")
     seed_types_by = st.pills('show', list(splits), default = "finish")
-    box, t = st.columns([0.6, 0.4])
-    with box:
-        box_df = df[['player', 'season', 'match', 'seed_type', seed_types_by]].sort_values('seed_type')
-        seed_type_box = px.box(box_df, y = seed_types_by, x = 'seed_type', color = 'seed_type', points='all', hover_data=['player', seed_types_by, 'season', 'match'])
-        seed_type_box.update_xaxes(showgrid=True)
-        seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
-        seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
-        seed_type_box.update_layout(showlegend=False)
-        st.plotly_chart(seed_type_box)
-
-    with t:
-
-        for seedtype in df['seed_type'].unique():
-            average_time_st = df[df['seed_type'] == seedtype][seed_types_by].mean()
-            fastest_time_st = df[df['seed_type'] == seedtype][seed_types_by].min()
-            slowest_time_st = df[df['seed_type'] == seedtype][seed_types_by].max()
-            if not math.isnan(fastest_time_st):
-                if fastest_time_st < 0:
-                    fastest_time_st = "-" + str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
-                else: fastest_time_st = str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
-            else: fastest_time_st = "N/A"
-            
-            if not math.isnan(slowest_time_st): slowest_time_st = str(datetime.timedelta(seconds = abs(slowest_time_st)))[2:]
-            else: slowest_time_st = "N/A"
-            
-            if not math.isnan(average_time_st): average_time_st = str(datetime.timedelta(seconds = np.round(average_time_st)))[2:]
-            else: average_time_st = "N/A"
-
-            st.markdown(f'<span style="color:#00c15a;font-weight:bold">{seedtype}</span> \n - average <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{average_time_st}</span>\n - fastest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{fastest_time_st}</span> \n - slowest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{slowest_time_st}</span>', unsafe_allow_html=True)
+    if not seed_types_by: st.warning("choose an option")
+    else:
+        box, t = st.columns([0.6, 0.4])
+        with box:
+            box_df = df[['player', 'season', 'match', 'seed_type', seed_types_by]].sort_values('seed_type')
+            seed_type_box = px.box(box_df, y = seed_types_by, x = 'seed_type', color = 'seed_type', points='all', hover_data=['player', seed_types_by, 'season', 'match'])
+            seed_type_box.update_xaxes(showgrid=True)
+            seed_type_box.update_traces(fillcolor=None, selector=dict(type='box'))
+            seed_type_box.update_traces(pointpos=0, jitter=0.5, marker=dict(opacity=0.4))
+            seed_type_box.update_layout(showlegend=False)
+            st.plotly_chart(seed_type_box)
+    
+        with t:
+    
+            for seedtype in df['seed_type'].unique():
+                average_time_st = df[df['seed_type'] == seedtype][seed_types_by].mean()
+                fastest_time_st = df[df['seed_type'] == seedtype][seed_types_by].min()
+                slowest_time_st = df[df['seed_type'] == seedtype][seed_types_by].max()
+                if not math.isnan(fastest_time_st):
+                    if fastest_time_st < 0:
+                        fastest_time_st = "-" + str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
+                    else: fastest_time_st = str(datetime.timedelta(seconds = abs(fastest_time_st)))[2:]
+                else: fastest_time_st = "N/A"
+                
+                if not math.isnan(slowest_time_st): slowest_time_st = str(datetime.timedelta(seconds = abs(slowest_time_st)))[2:]
+                else: slowest_time_st = "N/A"
+                
+                if not math.isnan(average_time_st): average_time_st = str(datetime.timedelta(seconds = np.round(average_time_st)))[2:]
+                else: average_time_st = "N/A"
+    
+                st.markdown(f'<span style="color:#00c15a;font-weight:bold">{seedtype}</span> \n - average <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{average_time_st}</span>\n - fastest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{fastest_time_st}</span> \n - slowest <span style="font-weight:bold">{seed_types_by}</span>: <span style="color:#00c15a;font-weight:bold">{slowest_time_st}</span>', unsafe_allow_html=True)
 
     # st.markdown("""##### seed types by season""")
     # seedtype2 = st.pills("seed type", df['seed_type'].unique(), key = 6, default = "ruined portal")
