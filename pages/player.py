@@ -20,7 +20,7 @@ player = st.selectbox(
     players,
     index=players.index(default_player),
 )
-st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - " + player)
+#st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - " + player)
 st.title(player)
 
 sidebar.make_sidebar()
