@@ -92,7 +92,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 sidebar.make_sidebar()
-st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats - " + player1 + " vs " + player2)
+st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats")
 st.markdown(f"""# <a href="/player?player={player1}" target="_self" class="player-link">{player1}</a> vs <a href="/player?player={player2}" target="_self" class="player-link">{player2}</a>""", unsafe_allow_html=True)
 winner = df.groupby('player')['finish'].count().idxmax()
 num_won = df[df['player'] == winner]['finish'].count()
