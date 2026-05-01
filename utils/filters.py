@@ -97,7 +97,7 @@ def average_time(df, players=None, seasons=None, adjust = False, adjust_for_seas
     else: 
         result = df.groupby('player').agg({'match':'count', 'time':'mean'}).rename(columns={'match': 'number_of_instances', 'time': 'average_time'})
         result = result.reindex(players)
-    if adjust: result = adjustments.adjust(result, 'average_time', 'number_of_instances')
+    if adjust: result = adjustments.adjust(result, 'average_time', 'number_of_instances', k = 30)
     if 'player' in result.reset_index().columns:
         result = pd.merge(result, players2, how='outer', on='player')
         result["average_time_percentile"] = result["average_time"].rank(pct=True, na_option='bottom')
