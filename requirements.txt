@@ -2,3 +2,4 @@ streamlit
 plotly
 pandas
 numpy
+st_social_media_links
