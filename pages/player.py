@@ -56,7 +56,7 @@ st.markdown(
 
 # second section with stats and the comparison to other players ------------------------------------------------
 
-if player not in df['players'].unique():
+if player not in df['player'].unique():
     st.write("coming soon!")
 
 else:
