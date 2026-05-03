@@ -585,7 +585,7 @@ with st.container(
                 view = st.pills('view', ['average times', 'counts'], default = 'average times')
                 if not view: st.warning("choose an option")
                 else:
-                    st.markdown(f"""###### {"average" if view == 'average times' else ""} {seed_types_by3} {"" if view == 'average times' else "counts"} per seed type by player""")
+                    st.markdown(f"""###### {("adjusted average" if adjust_st else "average") if view == 'average times' else ""} {seed_types_by3} {"" if view == 'average times' else "counts"} per seed type by player""")
                     if view == 'average times':
                         st_players = (st_players_toplot.pivot(index='player', columns='seed_type', values='average').reset_index())
                         cols = st_players.columns[1:]
