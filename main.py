@@ -91,8 +91,13 @@ with place:
         adjust_for_seasons = st.checkbox('adjust for number of seasons played', help="adjusts for the number of seasons played to keep players with very few seasons from having skewed results. makes the rankings in the table more robust, but the actual number loses interpretability", key = 22)
         
         seasons_placements = filters.playoffsplacements(placements, rescale=True if adjust_placements else False, adjust=True if adjust_for_seasons else False)
-        avg_placement_player = seasons_placements[seasons_placements['average_placement'] == min(seasons_placements['average_placement'])]['player'].iloc[0]
-        avg_placement_avg = round(seasons_placements[seasons_placements['average_placement'] == min(seasons_placements['average_placement'])]['average_placement'].iloc[0], 2)
+        avg_placement_player = seasons_placements[
+            seasons_placements['average_placement'] == seasons_placements['average_placement'].min()
+        ]['player'].iloc[0]
+        avg_placement_avg = round(
+            seasons_placements['average_placement'].min(),
+            2
+        )
         
         st.markdown(f"""  
             * top average placement: <span style="color:#00c15a;"><b>{avg_placement_player}</b></span> (<span style="color:#00c15a;">{avg_placement_avg}</span> {'adjusted' if adjust_for_seasons else ''} average placement)
