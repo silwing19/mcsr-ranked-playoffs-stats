@@ -11,6 +11,8 @@ st.set_page_config(layout="wide", page_title="mcsr ranked playoffs stats")
 df, placements = filters.load_data()
 
 st.title("mcsr ranked playoffs stats")
+if st.button("refresh data"):
+    st.cache_data.clear()
 sidebar.make_sidebar()
 
 # add at the top quick stats - number of seeds played total, overall average time, overall fastest time, number of seasons, number of players total
