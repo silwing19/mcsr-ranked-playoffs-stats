@@ -56,7 +56,7 @@ st.markdown(
 
 # second section with stats and the comparison to other players ------------------------------------------------
 
-if placement == "<NA>":
+if player not in df['players'].unique():
     st.write("coming soon!")
 
 else:
