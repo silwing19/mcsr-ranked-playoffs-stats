@@ -74,7 +74,7 @@ def placement_card(season, placement):
         </style>
         <div style="
             padding:14px;
-            padding-right:0;
+            padding-right:10px;
             padding-left:0;
             border-radius:1px;
             text-align:center;
