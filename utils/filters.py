@@ -154,7 +154,7 @@ def over_time(df, splits = None):
 
 def ordinal(n):
     if pd.isna(n):
-        suffix=""
+        suffix="N/A"
     elif 11 <= (n % 100) <= 13:
         suffix = 'th'
     else:
