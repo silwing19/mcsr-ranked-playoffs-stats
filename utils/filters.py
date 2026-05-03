@@ -152,7 +152,9 @@ def over_time(df, splits = None):
     return otime[otime['time'].isna() == False]
 
 def ordinal(n):
-    if 11 <= (n % 100) <= 13:
+    if pd.isna(n):
+        suffix=""
+    elif 11 <= (n % 100) <= 13:
         suffix = 'th'
     else:
         suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
