@@ -124,7 +124,7 @@ else:
                 
                 if not compare_to: st.warning("choose an option")
                 else:
-                    if compare_to != 'all times': all_times = all_times[all_times['season'] == int(compare_to[-1])]
+                    if compare_to != 'all times': all_times = all_times[all_times['season'] == int(compare_to.split(' ', 1)[1])]
                     if compare_to == 'all times': all_times['season'] = 'all'
                     splits_to_plot = pd.concat([season_times, all_times])
                     finishes_to_plot = splits_to_plot[splits_to_plot['split'] == 'finish']
@@ -176,7 +176,7 @@ else:
             compare_to2 = st.pills("compare to", compareto2, selection_mode='single', default='all times', key=2)
             if not compare_to2: st.warning("choose an option")
             else:
-                if compare_to2 != 'all times': all_times = all_times[all_times['season'] == int(compare_to2[-1])]
+                if compare_to2 != 'all times': all_times = all_times[all_times['season'] == int(compare_to2.split(' ', 1)[1])]
                 if compare_to2 == 'all times': all_times['season'] = 'all'
                 splits_to_plot = pd.concat([season_times, all_times])
                 splits_to_plot = splits_to_plot[splits_to_plot['split'] != 'finish']
