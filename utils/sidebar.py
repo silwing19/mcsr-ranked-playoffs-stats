@@ -2,7 +2,7 @@ import streamlit as st
 from st_social_media_links import SocialMediaIcons
 
 social_media_links = [
-    "https://x.com/silwing19",
+    "https://x.com/silwing_",
     "https://github.com/silwing19",
 ]
 
